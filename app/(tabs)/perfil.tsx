@@ -728,7 +728,7 @@ export default function ProfileScreen() {
                 <Ionicons name="chevron-forward" size={24} color={Colors[currentTheme].primary} />
             </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push('/telas_extras/tema')}>
+              <TouchableOpacity onPress={() => router.push({pathname: '/telas_extras/mercado_pago', params: {valor: 0.5}})}>
             <View style={[styles.preferenceItem, { backgroundColor: Colors[currentTheme].cardBackground }]}>
               <Ionicons name="color-palette" size={24} color={Colors[currentTheme].primary} />
               <Text style={[styles.preferenceText, { color: Colors[currentTheme].textLight }]}>Tema</Text>

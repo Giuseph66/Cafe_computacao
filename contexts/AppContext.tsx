@@ -7,7 +7,7 @@ import * as Device from 'expo-device';
 import { router } from 'expo-router';
 import { collection, doc, getDoc, limit, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 interface SystemSettings {
   dailyCoffeeLimit: number;
@@ -310,6 +310,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const checkAppVersion = async (): Promise<boolean> => {
+    if (Platform.OS === 'web') return true;
     try {
       const currentVersion = Constants.expoConfig?.version || '1.0.0';
       const settingsDoc = await getDoc(doc(db, 'settings','Um2M0ZVZ9CBbkoWKhYHR'));

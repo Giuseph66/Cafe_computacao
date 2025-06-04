@@ -1,12 +1,12 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, Head } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
-import { Image, Platform } from 'react-native';
+import { Image, Platform, Text } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { AppProvider } from '@/contexts/AppContext';
@@ -53,6 +53,12 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = 'Cafézão da Computação';
+    }
+  }, []);
+
   if (!loaded) {
     return null;
   }
@@ -63,7 +69,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="acesso/index" options={{ headerShown: false }} />
           <Stack.Screen name="acesso/register" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false, }}/>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }}/>
           <Stack.Screen name="telas_extras/pagamento" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/notifications" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/estatisticas" options={{ headerShown: false }} />
