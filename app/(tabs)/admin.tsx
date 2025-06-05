@@ -23,7 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { db } from '@/config/firebase';
-import { collection, getDocs, doc, updateDoc, serverTimestamp, query, where, and, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, serverTimestamp, query, where, and, onSnapshot, orderBy, deleteDoc } from 'firebase/firestore';
 import { useApp } from '@/contexts/AppContext';
 import { Colors, ThemeType } from '../../constants/Colors';
 import { useColorScheme } from 'react-native';
@@ -265,7 +265,14 @@ export default function AdminScreen() {
       setIsLoading(false);
     }
   };
-
+  const apagar_pendentes = async () => {
+    const paymentsQuery = query(collection(db, 'payments'), where('status', '==', 'pending'));
+    const paymentsSnapshot = await getDocs(paymentsQuery);
+    paymentsSnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+    coffeeAlert('Pagamentos pendentes apagados com sucesso!', 'success');
+  };
   const handleViewDetails = (item: PaymentData | SubscriptionData) => {
     setSelectedItem(item);
     setIsModalVisible(true);
@@ -431,14 +438,30 @@ export default function AdminScreen() {
     payment.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     payment.id.includes(searchQuery)
   );
-
+  if (searchQuery.toLowerCase() === 'apagar_pendentes') {
+    setSearchQuery('')
+    coffeeAlert(
+      `Tem certeza que deseja apagar os pagamentos pendentes?`,
+      'warning',
+      [
+        {
+          text: 'Não, cancelar',
+          style: 'cancel',
+          onPress: () => {setSearchQuery('')}
+        },
+        {
+          text: 'Sim, apagar!',
+          onPress: () => apagar_pendentes()
+        }
+      ]
+    );
+  }
   const filteredSubscriptions = subscriptions.filter(subscription => 
     subscription.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     subscription.id.includes(searchQuery)
   );
 
   const renderPaymentItem = ({ item }: { item: PaymentData }) => {
-    console.log('Rendering payment item:', item);
     return (
       <TouchableOpacity
         style={[styles.paymentItem, { backgroundColor: Colors[currentTheme].cardBackground }]}

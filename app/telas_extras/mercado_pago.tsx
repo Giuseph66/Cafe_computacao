@@ -112,9 +112,47 @@ export default function MercadoPagoScreen() {
       updatedAt: serverTimestamp(),
       externalReference: userToken
     };
+    const pix = true;
+    let preferenceData_tipo_pg;
+    if (pix) {
+      preferenceData_tipo_pg = {
+        payment_method: "pix",
+        payment_methods_configurations: {
+          default_payment_method_id: "pix",
+          installments: 1
+        },
+        payment_methods: {
+          installments: 1,
+          default_installments: 1,
+          excluded_payment_types: [
+            { id: "credit_card" },
+            { id: "debit_card" },
+            { id: "atm" }
+          ]
+        },
+      };
+    } else {
+      preferenceData_tipo_pg = {
+        payment_methods: {
+        installments: 1,
+        default_installments: 1,
+        excluded_payment_types: [
+          { id: "pix" },
+          { id: "debit_card" },
+          { id: "bank_transfer" },
+          { id: "atm" }
+        ]
+      },
+      payment_methods_configurations: {
+        default_payment_method_id: "credit_card",
+        installments: 1
+      },
+    }
+  }
 
     const paymentRef = await addDoc(collection(db, 'payments'), paymentRecord);
-      // Criar preferência de pagamento no Mercado Pago
+    // Criar preferência de pagamento no Mercado Pago
+      const webhook_url= "https://6687-168-228-93-241.ngrok-free.app"
       const preferenceData = {
         items: [
           {
@@ -129,9 +167,9 @@ export default function MercadoPagoScreen() {
           email: email
         },
         back_urls: {
-          success: "https://8299-168-228-93-241.ngrok-free.app/success",
-          failure: "https://8299-168-228-93-241.ngrok-free.app/failure",
-          pending: "https://8299-168-228-93-241.ngrok-free.app/pending"
+          success: `${webhook_url}/success`,
+          failure: `${webhook_url}/failure`,
+          pending: `${webhook_url}/pending`
         },
         auto_return: "approved",
         external_reference: {
@@ -141,13 +179,12 @@ export default function MercadoPagoScreen() {
             valor: valor,
             createdAt: serverTimestamp(),
             Id_banco: paymentRef.id
-
-        },
-        webhook_url: "https://8299-168-228-93-241.ngrok-free.app/webhook"
+        }, 
+        ...preferenceData_tipo_pg,
+        webhook_url: `${webhook_url}/webhook`
       };
 
       const preference = await createPreference(preferenceData);
-
       // Abrir o navegador com a URL de pagamento
       const result = await WebBrowser.openBrowserAsync(preference.init_point);
 

@@ -11,6 +11,7 @@ const tintColorDark = '#fff';
 export type ThemeColors = {
   text: string;
   background: string;
+  backgroundModal: string;
   tint: string;
   icon: string;
   tabIconDefault: string;
@@ -326,6 +327,7 @@ export const Colors: Record<ThemeType, ThemeColors> = {
   default: {
     text: '#11181C',
     background: '#4A2C2A',
+    backgroundModal: 'rgba(0,0,0,0.7)',
     tint: '#8B4513',
     icon: '#E0E0E0',
     tabIconDefault: '#E0E0E0',
@@ -471,6 +473,7 @@ export const Colors: Record<ThemeType, ThemeColors> = {
   dark: {
     text: '#ECEDEE',
     background: '#151718',
+    backgroundModal: 'rgba(0,0,0,0.7)',
     tint: '#fff',
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
@@ -616,6 +619,7 @@ export const Colors: Record<ThemeType, ThemeColors> = {
   light: {
     text: '#11181C',
     background: '#F0F0F0',
+    backgroundModal: 'rgba(0,0,0,0.7)',
     tint: '#0A7EA4',
     icon: '#E0E0E0',
     tabIconDefault: '#E0E0E0',

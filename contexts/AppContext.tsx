@@ -59,6 +59,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     welcomeMessage: 'Bem-vindo ao nosso sistema de café!',
     serverUrl: 'https://44e2-168-228-94-157.ngrok-free.app',
     pixKey: '+5566999086599',
+    webhookUrl: 'https://6687-168-228-93-241.ngrok-free.app',
     appVersion: Constants.expoConfig?.version || '1.0.0',
     minAppVersion: '1.0.0',
   });

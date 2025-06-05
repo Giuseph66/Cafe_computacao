@@ -79,6 +79,7 @@ export default function RootLayout() {
           <Stack.Screen name="telas_extras/avisos" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/financeiro" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/sobre" options={{ headerShown: false }} />
+          <Stack.Screen name="telas_extras/payment_selection" options={{ headerShown: false }} />
           <Stack.Screen name="jogos" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

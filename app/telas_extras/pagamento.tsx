@@ -307,7 +307,8 @@ export default function PaymentScreen() {
       const userRef = doc(db, 'users', userToken);
       await updateDoc(userRef, {
         subscriptionStatus: 'avaliando',
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        lastPaymentId: paymentRef.id
       });
       
       // Salvar o ID do pagamento no AsyncStorage para referência

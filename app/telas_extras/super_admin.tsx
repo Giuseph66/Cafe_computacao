@@ -52,6 +52,7 @@ interface SystemSettings {
   maintenanceMode: boolean;
   welcomeMessage: string;
   serverUrl: string;
+  webhook_url : string ;
   pixKey: string;
   superAdmins: string[]; // Array of user IDs who are super admins
   minAppVersion: string;
@@ -83,6 +84,7 @@ const SuperAdminScreen = () => {
     maintenanceMode: false,
     welcomeMessage: 'Bem-vindo ao nosso sistema de café!',
     serverUrl: 'https://44e2-168-228-94-157.ngrok-free.app',
+    webhook_url: '127.0.0.1',
     pixKey: '+5566999086599',
     superAdmins: [],
     minAppVersion: '1.0.0',
@@ -831,6 +833,20 @@ const SuperAdminScreen = () => {
                 placeholderTextColor="#999"
               />
             </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>URL do Webhook</Text>
+              <TextInput
+                style={styles.input}
+                value={settings.webhook_url}
+                onChangeText={(value) => setSettings({
+                  ...settings,
+                  webhook_url: value
+                })}
+                placeholder="URL do servidor"
+                placeholderTextColor="#999"
+              />
+            </View>
+            
             
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Chave PIX</Text>
