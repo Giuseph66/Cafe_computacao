@@ -1,6 +1,12 @@
+// Corrige tslib default para web
+const tslibPatched: any = require('tslib');
+if (!tslibPatched.default) {
+  tslibPatched.default = tslibPatched;
+}
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter, Head } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -80,6 +86,8 @@ export default function RootLayout() {
           <Stack.Screen name="telas_extras/financeiro" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/sobre" options={{ headerShown: false }} />
           <Stack.Screen name="telas_extras/payment_selection" options={{ headerShown: false }} />
+          <Stack.Screen name="telas_extras/pag_pendente" options={{ headerShown: false }} />
+          <Stack.Screen name="acesso/forgot-password" options={{ headerShown: false }} />
           <Stack.Screen name="jogos" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

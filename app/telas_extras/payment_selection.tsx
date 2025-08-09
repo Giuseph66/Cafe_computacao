@@ -35,7 +35,7 @@ export default function PaymentSelectionScreen() {
   const [colors, setColors] = useState(Colors['default']);
   const [followSystemTheme, setFollowSystemTheme] = useState<boolean>(false);
   const [webhookUrl, setWebhookUrl] = useState<string>('');
-  const [mercadoPago, setMercadoPago] = useState<boolean>(false);
+  const [mercadoPago, setMercadoPago] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isScreenMounted, setIsScreenMounted] = useState(true);
   const [isListenerActive, setIsListenerActive] = useState(false);
@@ -59,7 +59,6 @@ export default function PaymentSelectionScreen() {
         }
       }
     } catch (error) {
-      console.error('Erro ao atualizar o tema:', error);
     }
   }, [colorScheme]);
 
@@ -110,7 +109,6 @@ export default function PaymentSelectionScreen() {
               setMercadoPago(response.status === 200);
               setWebhookUrl(webhookUrl);
             } catch (error: any) {
-              console.error('Erro ao verificar webhook:', error?.message || 'Erro desconhecido');
               setMercadoPago(false);
             }
           } else {
@@ -122,7 +120,6 @@ export default function PaymentSelectionScreen() {
           setMercadoPago(false);
         }
       } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
         coffeeAlert('Ocorreu um erro ao verificar sua autenticação','error');
         router.push('/acesso');
       }
@@ -174,8 +171,15 @@ export default function PaymentSelectionScreen() {
             await AsyncStorage.setItem('subscriptionStatus', status);
             
             if(status === 'avaliando' && isScreenMounted){
-              console.log('Mostrando modal de avaliação...');
-              setIsModalVisible(true);
+              console.log('Redirecionando para tela de pagamento pendente...');
+              // Redirecionar para a tela de pagamento pendente com os parâmetros necessários
+              router.push({
+                pathname: '/telas_extras/pag_pendente',
+                params: {
+                  valor: valor.toString(),
+                  metodo: selectedMethod === 'credit' ? 'Cartão de Crédito' : 'PIX'
+                }
+              });
             }else if(status === 'active'){
               console.log('Status ativo, fechando modal...');
               router.push('/(tabs)');
@@ -315,7 +319,6 @@ export default function PaymentSelectionScreen() {
       await AsyncStorage.setItem('subscriptionStatus', 'avaliando');
       
     } catch (error) {
-      console.error('Erro ao processar pagamento:', error);
       coffeeAlert('Ocorreu um erro ao processar seu pagamento. Por favor, tente novamente.','error');
     } finally {
       setIsLoading(false);
@@ -342,7 +345,6 @@ const novo_pagamento = async () => {
         await deleteDoc(doc(db, 'payments', lastPaymentId));
         console.log('Pagamento deletado com sucesso');
       } catch (error) {
-        console.error('Erro ao deletar pagamento:', error);
       }
     }
 
@@ -354,7 +356,6 @@ const novo_pagamento = async () => {
     
     await AsyncStorage.setItem('subscriptionStatus', 'inactive');
   } catch (error) {
-    console.error('Erro ao processar novo pagamento:', error);
     coffeeAlert('Ocorreu um erro ao processar sua solicitação. Tente novamente.', 'error');
   }
 };
@@ -366,7 +367,7 @@ const novo_pagamento = async () => {
       >
         <TouchableOpacity 
           style={[styles.backButton, { backgroundColor: colors.cardBackground }]}
-          onPress={() => router.back()}
+          onPress={() => router.replace('/(tabs)')}
         >
           <Ionicons name="arrow-back" size={24} color={colors.textLight} />
         </TouchableOpacity>

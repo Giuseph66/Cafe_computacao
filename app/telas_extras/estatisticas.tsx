@@ -776,12 +776,12 @@ export default function StatisticsScreen() {
           </View>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity 
+          {/*<TouchableOpacity 
             style={[styles.filterButton, { backgroundColor: Colors[currentTheme].cardBackground }]} 
             onPress={() => setShowFilters(true)}
           >
             <Ionicons name="filter" size={24} color={Colors[currentTheme].textLight} />
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
           <TouchableOpacity 
             style={[styles.toggleButton, { backgroundColor: Colors[currentTheme].cardBackground }]} 
             onPress={() => setIsGeneralView(!isGeneralView)}

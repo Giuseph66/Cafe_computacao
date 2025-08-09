@@ -2,7 +2,7 @@
   "expo": {
     "name": "Cafézão da Computação",
     "slug": "cafezao-da-computacao",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -12,6 +12,9 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "697811f9-cec3-4441-825a-318da6391a3e"
       }
     },
     "ios": {
@@ -25,7 +28,14 @@
       },
       "icon": "./assets/images/icon.png",
       "package": "com.cafezao.computacao",
-      "versionCode": 5
+      "versionCode": 6,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -50,7 +60,9 @@
           "color": "#ffffff",
           "sounds": []
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "notification": {
       "icon": "./assets/images/icon.png",

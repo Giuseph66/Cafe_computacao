@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -20,13 +20,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { db } from '@/config/firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
-import { coffeeAlert } from '@/utils/coffeeAlert';
+import { CoffeeModal, useCoffeeModal } from '@/components/CoffeeModal';
 
 const { width, height } = Dimensions.get('window');
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -34,19 +35,65 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
+  const [logoPressCount, setLogoPressCount] = useState(0);
+  const logoPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { visible, message, type, showModal, hideModal } = useCoffeeModal();
+
+  const unlockEasterEgg = async () => {
+    await AsyncStorage.setItem('isSuperAdmin', 'true');
+    showModal('🎉 Parabéns! Você desbloqueou o easter egg, tire uma print e compartilhe com o monitor!!!', 'success');
+  };
 
   const handleLogoPress = () => {
-    coffeeAlert('Para de ser curiozo!!!','success');
+    // Reiniciar o timer se o usuário continuar tocando rapidamente
+    if (logoPressTimer.current) {
+      clearTimeout(logoPressTimer.current);
+    }
+    setLogoPressCount(prev => {
+      const newCount = prev + 1;
+      // Se chegar a 7 toques, ativa o Easter Egg
+      if (newCount >= 100) {
+        unlockEasterEgg();
+        return 0; // resetar contagem
+      }
+      // Feedback divertido enquanto aind a não atingiu o limite
+      showModal(`Curiosidade nível ${newCount}/100…`, 'info');
+      return newCount;
+    });
+    // Se não houver novos toques em 2 s, resetar contagem
+    logoPressTimer.current = setTimeout(() => {
+      setLogoPressCount(0);
+      showModal('VOCÊ É FRACO LHE FALTA CAFÉ', 'warning');
+    }, 2000);
+  };
+
+  const validateEmail = (text: string) => {
+    const regex = /^[\w-.]+@[\w-]+\.[A-Za-z]{2,}$/;
+    if (text.trim().length === 0) {
+      setEmailError(null);
+      return true;
+    }
+    if (!regex.test(text.trim())) {
+      setEmailError('Email inválido');
+      return false;
+    }
+    setEmailError(null);
+    return true;
   };
 
   const handleRegister = async () => {
     if (!name || !email || !password || !confirmPassword) {
-      coffeeAlert('Por favor, preencha todos os campos','error');
+      showModal('Por favor, preencha todos os campos','error');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      showModal('Informe um email válido','error');
       return;
     }
 
     if (password !== confirmPassword) {
-      coffeeAlert('As senhas não coincidem','error');
+      showModal('As senhas não coincidem','error');
       return;
     }
 
@@ -58,7 +105,7 @@ export default function RegisterScreen() {
       const querySnapshot = await getDocs(q);
       
       if (!querySnapshot.empty) {
-        coffeeAlert('Este email já está em uso','error');
+        showModal('Este email já está em uso','error');
         setIsLoading(false);
         return;
       }
@@ -88,11 +135,17 @@ export default function RegisterScreen() {
       router.replace('/(tabs)');
     } catch (error: any) {
       console.error('Registration error:', error);
-      coffeeAlert('Ocorreu um erro durante o cadastro','error');
+      showModal('Ocorreu um erro durante o cadastro','error');
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (logoPressTimer.current) clearTimeout(logoPressTimer.current);
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -144,12 +197,19 @@ export default function RegisterScreen() {
                   placeholder="Email"
                   placeholderTextColor="#A0A0A0"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    validateEmail(text);
+                  }}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   editable={!isLoading}
                 />
               </View>
+
+              {emailError && (
+                <Text style={{ color: '#FF6B6B', marginBottom: 10, marginLeft: 5 }}>{emailError}</Text>
+              )}
 
               <View style={styles.inputContainer}>
                 <Ionicons name="lock-closed-outline" size={20} color="#A0A0A0" style={styles.inputIcon} />
@@ -235,6 +295,12 @@ export default function RegisterScreen() {
           </View>
         </ScrollView>
       </LinearGradient>
+      <CoffeeModal
+        visible={visible}
+        message={message}
+        type={type}
+        onClose={hideModal}
+      />
     </SafeAreaView>
   );
 }

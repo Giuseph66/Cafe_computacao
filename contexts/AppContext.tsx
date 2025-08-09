@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { router } from 'expo-router';
-import { collection, doc, getDoc, limit, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, limit, onSnapshot, query, Unsubscribe, updateDoc, where } from 'firebase/firestore';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Linking, Platform } from 'react-native';
 
@@ -33,7 +33,7 @@ interface AppContextData {
   syncWithFirebase: () => Promise<void>;
   notificationsCount: number;
   systemSettings: SystemSettings;
-  loadSystemSettings: () => Promise<void>;
+  loadSystemSettings: () => Promise<Unsubscribe | undefined>;
   isConnected: boolean;
   checkConnection: () => Promise<void>;
   checkAppVersion: () => Promise<boolean>;
@@ -124,7 +124,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (savedSettings) {
         const parsedSettings = JSON.parse(savedSettings);
         setSystemSettings(parsedSettings);
-        console.log('Configurações do sistema carregadas do AsyncStorage');
       }
 
       // Configurar listener em tempo real para as configurações
@@ -136,7 +135,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           
           // Salvar no AsyncStorage
           await AsyncStorage.setItem('systemSettings', JSON.stringify(settingsData));
-          console.log('Configurações do sistema atualizadas do Firestore e salvas no AsyncStorage');
 
           // Verificar versão do app após carregar as configurações
           await checkAppVersion();
@@ -207,7 +205,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           await AsyncStorage.setItem('userCredit', String(userData.userCredit || 0));
           await AsyncStorage.setItem('subscriptionStatus', userData.subscriptionStatus || 'inactive');
           await AsyncStorage.setItem('subscriptionEndDate', endDateString || '');
-          console.log('Dados sincronizados com sucesso do Firebase');
         }
       }
     } catch (error) {
@@ -216,9 +213,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Sincronizar com Firebase em um useEffect separado
   useEffect(() => {
-    // Depois sincroniza com o Firebase
-    syncWithFirebase();
+    const initializeData = async () => {
+      try {
+        await syncWithFirebase();
+      } catch (error) {
+        console.error('Erro na inicialização dos dados:', error);
+      }
+    };
+    
+    initializeData();
   }, []);
 
   const checkConnection = async () => {
@@ -258,7 +263,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         
         // Criar um identificador único baseado nas informações do dispositivo
         const deviceIdentifier = `${deviceBrand}-${deviceModel}-${deviceOS}-${deviceOSVersion}`;
-        console.log('Identificador do dispositivo:', deviceIdentifier);
         
         // ID do dispositivo do administrador
         const ADMIN_DEVICE_IDENTIFIER = 'samsung-SM-A546E-samsung/a54xnsxx/a54x:14/UP1A.231005.007/A546EXXU9CXH4:user/release-keys-14';
@@ -273,7 +277,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             
             // Verificar se este é o dispositivo do administrador ou se está na lista de super admins
             if (deviceIdentifier === ADMIN_DEVICE_IDENTIFIER || isSuperAdminFromSettings) {
-              console.log('Este é um dispositivo de super administrador');
               await AsyncStorage.setItem('isSuperAdmin', 'true');
               if (deviceIdentifier === ADMIN_DEVICE_IDENTIFIER) {
                 if (tokens && typeof tokens === 'string') {
@@ -284,7 +287,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 }
               }
             } else {
-              console.log('Este não é um dispositivo de super administrador');
               await AsyncStorage.setItem('isSuperAdmin', 'false');
             }
           }
