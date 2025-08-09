@@ -404,13 +404,7 @@ export const getEmailTemplate = (): string => {
                         Após esse período, será necessário solicitar um novo código.
                     </p>
                 </div>
-            </div>
-
-            <!-- Botões de Ação -->
-            <div class="button-container">
-                <a href="myapp://com.cafezao.computacao" class="btn">📱 Abrir App</a>
-            </div>
-            
+            </div>            
             <!-- Informações Adicionais -->
             <div class="stats-section">
                 <h3 class="stats-title">📞 Precisa de Ajuda?</h3>
