@@ -1014,7 +1014,9 @@ export default function StatisticsScreen() {
                 <View style={styles.recentCoffeeInfo}>
                   <Text style={[styles.recentCoffeeDate, { color: Colors[currentTheme].textLight }]}>
                     {coffee.date.toLocaleDateString('pt-BR')}
+                    {isGeneralView && coffee.userName && ` - ${coffee.userName}`}
                   </Text>
+
                   <Text style={[styles.recentCoffeeTime, { color: Colors[currentTheme].textLight }]}>
                     {coffee.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                   </Text>

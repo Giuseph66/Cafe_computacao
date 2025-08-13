@@ -505,12 +505,13 @@ export default function CreditScreen() {
                   </Text>
                 </View>
               ) : userData.subscriptionStatus === 'avaliando' ? (
-                <View style={[styles.evaluatingSubscription, { backgroundColor: Colors[currentTheme].evaluatingSubscription }]}>
+                <TouchableOpacity style={[styles.evaluatingSubscription, { backgroundColor: Colors[currentTheme].evaluatingSubscription }]}
+                onPress={() => router.push('/telas_extras/pag_pendente')}>
                   <Text style={[styles.evaluatingText, { color: Colors[currentTheme].evaluatingText }]}>Pagamento em Análise</Text>
                   <Text style={[styles.evaluatingDescription, { color: Colors[currentTheme].evaluatingDescription }]}>
                     Seu pagamento está sendo verificado. Em breve sua assinatura será ativada.
                   </Text>
-                </View>
+                </TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   style={[styles.subscribeButton, { backgroundColor: Colors[currentTheme].subscribeButton }]}

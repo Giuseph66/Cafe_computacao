@@ -427,7 +427,7 @@ export default function PagPendenteScreen() {
         {/* Botão Voltar */}
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: colors.cardBackground }]}
-          onPress={() => router.back()}
+          onPress={() => router.replace('/(tabs)')}
         >
           <Ionicons name="arrow-back" size={24} color={colors.icon} />
         </TouchableOpacity>
